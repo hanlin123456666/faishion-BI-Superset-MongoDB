@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Runtime / state
+state.json
+
+# Secrets & configs
+.env
+*.env
+mongodb.properties
+config.py
+etl/config.py
+
+# Docker data volumes
+mysql_data/
+superset_home/
+
+# OS
+.DS_Store
+Thumbs.db

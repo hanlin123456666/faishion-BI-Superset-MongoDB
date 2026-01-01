@@ -1,0 +1,49 @@
+services:
+  # 1️⃣ MySQL —— 数据真正存放的地方
+  mysql:
+    image: mysql:8
+    container_name: faishion-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: FAIshion
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 2️⃣ ETL —— 只负责“把数据写进 MySQL” (任务型容器)
+  etl:
+    image: python:3.10
+    container_name: faishion-etl
+    working_dir: /app
+    volumes:
+      - ./etl:/app
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_URI: mysql+pymysql://root:root@mysql:3306/FAIshion
+    command: >
+      /bin/sh -c "
+      pip install -r requirements.txt &&
+      python main.py
+      "
+
+
+  # 3️⃣ Superset —— 只负责“读 MySQL + 展示”
+  superset:
+    build: ./superset
+    container_name: faishion-superset
+    ports:
+      - "8088:8088"
+    depends_on:
+      - mysql
+    environment:
+      SUPERSET_SECRET_KEY: dev_key
+    command: >
+      /bin/sh -c "
+      superset db upgrade &&
+      superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin || true &&
+      superset init &&
+      superset run -h 0.0.0.0 -p 8088
+      "
+
+volumes:
+  mysql_data:
