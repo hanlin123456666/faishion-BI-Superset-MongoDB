@@ -81,7 +81,6 @@ Process:
 - Query MongoDB for records newer than last timestamp
 - Append new rows into MySQL
 - Update state file after successful run
-
 Use 1970-01-01T00:00:00 in order to do full ETL
 ---
 
